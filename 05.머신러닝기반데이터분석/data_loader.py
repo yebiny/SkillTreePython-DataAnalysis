@@ -36,17 +36,23 @@ def mpg_loader(test_size=0.2, rs=1):
 
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OneHotEncoder
 
-def iris_loader(c_1, c_not1, test_size=0.2, rs=1):
+def iris_loader(n_class, test_size=0.2, rs=1):
   iris = load_iris()
   X = iris.data
   y = iris.target
-
-  X = X[y!=2]
-  y = y[y!=2]
-  y = np.where(y==1, c_1, c_not1)
   print(X.shape, y.shape, X[0], y[0])
-
+  
+  if n_class==2:
+    X = X[y!=2]
+    y = y[y!=2]
+    y = np.where(y==1, 1, 0)
+  if n_class==3:
+    ohe = OneHotEncoder(sparse=False)
+    y = ohe.fit_transform(np.expand_dims(y,1))
+  
   X_train, X_test, y_train, y_test = train_test_split(X,y, random_state=rs)
+   
   print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
   return X_train, X_test, y_train, y_test
